@@ -46,12 +46,19 @@ function TodoDetail() {
   };
 
   const addChecklistItem = async () => {
+    const lines = newChecklistItemText.split('\n').map(line => line.trim()).filter(line => line !== '');
+    if (lines.length === 0) return;
+
     try {
-      const response = await axios.post(`http://localhost:8000/api/todos/${id}/checklist-items/`, {
-        text: newChecklistItemText,
-        completed: false,
-      });
-      setTodo({ ...todo, checklist_items: [...todo.checklist_items, response.data] });
+      const newItems = [];
+      for (const line of lines) {
+        const response = await axios.post(`http://localhost:8000/api/todos/${id}/checklist-items/`, {
+          text: line,
+          completed: false,
+        });
+        newItems.push(response.data);
+      }
+      setTodo({ ...todo, checklist_items: [...todo.checklist_items, ...newItems] });
       setNewChecklistItemText('');
     } catch (error) {
       console.error('Error adding checklist item:', error);
@@ -139,13 +146,13 @@ function TodoDetail() {
 
       <h3 className="mt-5">Checklist Items</h3>
       <div className="input-group mb-3">
-        <input
-          type="text"
+        <textarea
           className="form-control"
+          rows="3"
           value={newChecklistItemText}
           onChange={(e) => setNewChecklistItemText(e.target.value)}
-          placeholder="Add new checklist item"
-        />
+          placeholder="Enter checklist items, one per line"
+        ></textarea>
         <button className="btn btn-outline-secondary" type="button" onClick={addChecklistItem}>Add Item</button>
       </div>
       <ul className="list-group">
