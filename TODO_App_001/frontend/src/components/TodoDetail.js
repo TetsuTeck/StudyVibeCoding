@@ -10,6 +10,7 @@ function TodoDetail() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [status, setStatus] = useState('');
+  const [newChecklistItemText, setNewChecklistItemText] = useState('');
 
   useEffect(() => {
     fetchTodo();
@@ -40,6 +41,47 @@ function TodoDetail() {
       alert('Todo updated successfully!');
     } catch (error) {
       console.error('Error updating todo:', error);
+    }
+  };
+
+  const addChecklistItem = async () => {
+    try {
+      const response = await axios.post(`http://localhost:8000/api/todos/${id}/checklist-items/`, {
+        text: newChecklistItemText,
+        completed: false,
+      });
+      setTodo({ ...todo, checklist_items: [...todo.checklist_items, response.data] });
+      setNewChecklistItemText('');
+    } catch (error) {
+      console.error('Error adding checklist item:', error);
+    }
+  };
+
+  const toggleChecklistItemCompleted = async (itemId, completed) => {
+    try {
+      const response = await axios.put(`http://localhost:8000/api/todos/${id}/checklist-items/${itemId}/`, {
+        completed: !completed,
+      });
+      setTodo({
+        ...todo,
+        checklist_items: todo.checklist_items.map((item) =>
+          item.id === itemId ? response.data : item
+        ),
+      });
+    } catch (error) {
+      console.error('Error toggling checklist item completed status:', error);
+    }
+  };
+
+  const deleteChecklistItem = async (itemId) => {
+    try {
+      await axios.delete(`http://localhost:8000/api/todos/${id}/checklist-items/${itemId}/`);
+      setTodo({
+        ...todo,
+        checklist_items: todo.checklist_items.filter((item) => item.id !== itemId),
+      });
+    } catch (error) {
+      console.error('Error deleting checklist item:', error);
     }
   };
 
@@ -95,6 +137,36 @@ function TodoDetail() {
       </div>
       <button className="btn btn-success me-2" onClick={handleSave}>Save Changes</button>
       <button className="btn btn-secondary" onClick={() => navigate('/')}>Back to List</button>
+
+      <h3 className="mt-5">Checklist Items</h3>
+      <div className="input-group mb-3">
+        <input
+          type="text"
+          className="form-control"
+          value={newChecklistItemText}
+          onChange={(e) => setNewChecklistItemText(e.target.value)}
+          placeholder="Add new checklist item"
+        />
+        <button className="btn btn-outline-secondary" type="button" onClick={addChecklistItem}>Add Item</button>
+      </div>
+      <ul className="list-group">
+        {todo.checklist_items.map((item) => (
+          <li key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <input
+                type="checkbox"
+                className="form-check-input me-2"
+                checked={item.completed}
+                onChange={() => toggleChecklistItemCompleted(item.id, item.completed)}
+              />
+              <span className={item.completed ? 'text-decoration-line-through text-muted' : ''}>
+                {item.text}
+              </span>
+            </div>
+            <button className="btn btn-danger btn-sm" onClick={() => deleteChecklistItem(item.id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

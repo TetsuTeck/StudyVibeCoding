@@ -49,6 +49,16 @@ function TodoList() {
     }
   };
 
+  const getChecklistProgress = (checklistItems) => {
+    if (!checklistItems || checklistItems.length === 0) {
+      return "0/0 (0%)";
+    }
+    const completedItems = checklistItems.filter(item => item.completed).length;
+    const totalItems = checklistItems.length;
+    const progress = Math.round((completedItems / totalItems) * 100);
+    return `${completedItems}/${totalItems} (${progress}%)`;
+  };
+
   return (
     <div className="container mt-5">
       <h1 className="mb-4 text-center">TODO App</h1>
@@ -113,6 +123,7 @@ function TodoList() {
             <th>Start Date</th>
             <th>End Date</th>
             <th>Status</th>
+            <th>Checklist Progress</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -123,6 +134,7 @@ function TodoList() {
               <td>{todo.start_date}</td>
               <td>{todo.end_date}</td>
               <td>{todo.status}</td>
+              <td>{getChecklistProgress(todo.checklist_items)}</td>
               <td>
                 <Link to={`/todos/${todo.id}`} className="btn btn-info btn-sm me-2">Edit</Link>
                 <button className="btn btn-danger btn-sm" onClick={() => deleteTodo(todo.id)}>Delete</button>
