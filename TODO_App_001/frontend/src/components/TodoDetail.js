@@ -39,6 +39,7 @@ function TodoDetail() {
       });
       setTodo(response.data);
       alert('Todo updated successfully!');
+      navigate('/'); // 保存後にリスト画面へ遷移
     } catch (error) {
       console.error('Error updating todo:', error);
     }
