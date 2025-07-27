@@ -4,7 +4,10 @@ import { Link } from 'react-router-dom';
 
 function TodoList() {
   const [todos, setTodos] = useState([]);
-  const [newTodoTitle, setNewTodoTitle] = useState('');
+  const [newTodoSubject, setNewTodoSubject] = useState('');
+  const [newTodoStartDate, setNewTodoStartDate] = useState('');
+  const [newTodoEndDate, setNewTodoEndDate] = useState('');
+  const [newTodoStatus, setNewTodoStatus] = useState('Pending');
 
   useEffect(() => {
     fetchTodos();
@@ -22,24 +25,18 @@ function TodoList() {
   const addTodo = async () => {
     try {
       const response = await axios.post('http://localhost:8000/api/todos/', {
-        title: newTodoTitle,
-        completed: false,
+        subject: newTodoSubject,
+        start_date: newTodoStartDate || null,
+        end_date: newTodoEndDate || null,
+        status: newTodoStatus,
       });
       setTodos([...todos, response.data]);
-      setNewTodoTitle('');
+      setNewTodoSubject('');
+      setNewTodoStartDate('');
+      setNewTodoEndDate('');
+      setNewTodoStatus('Pending');
     } catch (error) {
       console.error('Error adding todo:', error);
-    }
-  };
-
-  const toggleTodoCompleted = async (id, completed) => {
-    try {
-      const response = await axios.put(`http://localhost:8000/api/todos/${id}/`, {
-        completed: !completed,
-      });
-      setTodos(todos.map((todo) => (todo.id === id ? response.data : todo)));
-    } catch (error) {
-      console.error('Error toggling todo completed status:', error);
     }
   };
 
@@ -55,34 +52,85 @@ function TodoList() {
   return (
     <div className="container mt-5">
       <h1 className="mb-4 text-center">TODO App</h1>
-      <div className="input-group mb-3">
-        <input
-          type="text"
-          className="form-control"
-          value={newTodoTitle}
-          onChange={(e) => setNewTodoTitle(e.target.value)}
-          placeholder="Add new todo"
-        />
-        <button className="btn btn-primary" onClick={addTodo}>Add Todo</button>
-      </div>
-      <ul className="list-group">
-        {todos.map((todo) => (
-          <li key={todo.id} className="list-group-item d-flex justify-content-between align-items-center">
-            <div>
+      <div className="card mb-4">
+        <div className="card-header">Add New Todo</div>
+        <div className="card-body">
+          <div className="mb-3">
+            <label htmlFor="subject" className="form-label">Subject</label>
+            <input
+              type="text"
+              className="form-control"
+              id="subject"
+              value={newTodoSubject}
+              onChange={(e) => setNewTodoSubject(e.target.value)}
+              placeholder="Enter todo subject"
+            />
+          </div>
+          <div className="row mb-3">
+            <div className="col">
+              <label htmlFor="startDate" className="form-label">Start Date</label>
               <input
-                type="checkbox"
-                className="form-check-input me-2"
-                checked={todo.completed}
-                onChange={() => toggleTodoCompleted(todo.id, todo.completed)}
+                type="date"
+                className="form-control"
+                id="startDate"
+                value={newTodoStartDate}
+                onChange={(e) => setNewTodoStartDate(e.target.value)}
               />
-              <span className={todo.completed ? 'text-decoration-line-through text-muted' : ''}>
-                <Link to={`/todos/${todo.id}`} className="text-decoration-none text-dark">{todo.title}</Link>
-              </span>
             </div>
-            <button className="btn btn-danger btn-sm" onClick={() => deleteTodo(todo.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+            <div className="col">
+              <label htmlFor="endDate" className="form-label">End Date</label>
+              <input
+                type="date"
+                className="form-control"
+                id="endDate"
+                value={newTodoEndDate}
+                onChange={(e) => setNewTodoEndDate(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="mb-3">
+            <label htmlFor="status" className="form-label">Status</label>
+            <select
+              className="form-select"
+              id="status"
+              value={newTodoStatus}
+              onChange={(e) => setNewTodoStatus(e.target.value)}
+            >
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+          <button className="btn btn-primary" onClick={addTodo}>Add Todo</button>
+        </div>
+      </div>
+
+      <h2 className="mb-3">Todo List</h2>
+      <table className="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {todos.map((todo) => (
+            <tr key={todo.id}>
+              <td>{todo.subject}</td>
+              <td>{todo.start_date}</td>
+              <td>{todo.end_date}</td>
+              <td>{todo.status}</td>
+              <td>
+                <Link to={`/todos/${todo.id}`} className="btn btn-info btn-sm me-2">Edit</Link>
+                <button className="btn btn-danger btn-sm" onClick={() => deleteTodo(todo.id)}>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

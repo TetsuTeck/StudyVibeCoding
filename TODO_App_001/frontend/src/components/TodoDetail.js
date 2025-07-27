@@ -6,7 +6,10 @@ function TodoDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [todo, setTodo] = useState(null);
-  const [title, setTitle] = useState('');
+  const [subject, setSubject] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [status, setStatus] = useState('');
 
   useEffect(() => {
     fetchTodo();
@@ -16,38 +19,27 @@ function TodoDetail() {
     try {
       const response = await axios.get(`http://localhost:8000/api/todos/${id}/`);
       setTodo(response.data);
-      setTitle(response.data.title);
+      setSubject(response.data.subject);
+      setStartDate(response.data.start_date || '');
+      setEndDate(response.data.end_date || '');
+      setStatus(response.data.status);
     } catch (error) {
       console.error('Error fetching todo:', error);
     }
   };
 
-  const handleTitleChange = (e) => {
-    setTitle(e.target.value);
-  };
-
   const handleSave = async () => {
     try {
       const response = await axios.put(`http://localhost:8000/api/todos/${id}/`, {
-        title: title,
-        completed: todo.completed,
+        subject: subject,
+        start_date: startDate || null,
+        end_date: endDate || null,
+        status: status,
       });
       setTodo(response.data);
       alert('Todo updated successfully!');
     } catch (error) {
       console.error('Error updating todo:', error);
-    }
-  };
-
-  const handleToggleCompleted = async () => {
-    try {
-      const response = await axios.put(`http://localhost:8000/api/todos/${id}/`, {
-        title: todo.title,
-        completed: !todo.completed,
-      });
-      setTodo(response.data);
-    } catch (error) {
-      console.error('Error toggling completed status:', error);
     }
   };
 
@@ -59,24 +51,47 @@ function TodoDetail() {
     <div className="container mt-5">
       <h2 className="mb-4">Todo Detail</h2>
       <div className="mb-3">
-        <label htmlFor="todoTitle" className="form-label">Title:</label>
+        <label htmlFor="subject" className="form-label">Subject:</label>
         <input
           type="text"
           className="form-control"
-          id="todoTitle"
-          value={title}
-          onChange={handleTitleChange}
+          id="subject"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
         />
       </div>
-      <div className="mb-3 form-check">
+      <div className="mb-3">
+        <label htmlFor="startDate" className="form-label">Start Date:</label>
         <input
-          type="checkbox"
-          className="form-check-input"
-          id="todoCompleted"
-          checked={todo.completed}
-          onChange={handleToggleCompleted}
+          type="date"
+          className="form-control"
+          id="startDate"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
         />
-        <label className="form-check-label" htmlFor="todoCompleted">Completed</label>
+      </div>
+      <div className="mb-3">
+        <label htmlFor="endDate" className="form-label">End Date:</label>
+        <input
+          type="date"
+          className="form-control"
+          id="endDate"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="status" className="form-label">Status:</label>
+        <select
+          className="form-select"
+          id="status"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        >
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+        </select>
       </div>
       <button className="btn btn-success me-2" onClick={handleSave}>Save Changes</button>
       <button className="btn btn-secondary" onClick={() => navigate('/')}>Back to List</button>
