@@ -60,7 +60,7 @@ function TodoDetail() {
 
   const toggleChecklistItemCompleted = async (itemId, completed) => {
     try {
-      const response = await axios.put(`http://localhost:8000/api/todos/${id}/checklist-items/${itemId}/`, {
+      const response = await axios.patch(`http://localhost:8000/api/todos/${id}/checklist-items/${itemId}/`, {
         completed: !completed,
       });
       setTodo({
