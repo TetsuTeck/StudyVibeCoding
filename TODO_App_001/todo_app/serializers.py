@@ -5,6 +5,7 @@ class ChecklistItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChecklistItem
         fields = ('id', 'todo', 'text', 'completed')
+        read_only_fields = ('todo',)
 
 class TodoSerializer(serializers.ModelSerializer):
     checklist_items = ChecklistItemSerializer(many=True, read_only=True)
