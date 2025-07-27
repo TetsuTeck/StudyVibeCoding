@@ -135,7 +135,6 @@ function TodoDetail() {
           <option value="Completed">Completed</option>
         </select>
       </div>
-      <button className="btn btn-success me-2 mb-4" onClick={handleSave}>Save Changes</button>
 
       <h3 className="mt-5">Checklist Items</h3>
       <div className="input-group mb-3">
@@ -166,6 +165,7 @@ function TodoDetail() {
           </li>
         ))}
       </ul>
+      <button className="btn btn-success me-2 mt-4" onClick={handleSave}>Save Changes</button>
       <button className="btn btn-secondary mt-4" onClick={() => navigate('/')}>Back to List</button>
     </div>
   );
