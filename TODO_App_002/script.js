@@ -3,9 +3,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskInput = document.getElementById('task-input');
     const taskList = document.getElementById('task-list');
 
+    // Add 20 initial tasks for testing
+    const addInitialTasks = () => {
+        const testTasks = [
+            { text: 'デザインカンプ作成', completed: true },
+            { text: 'HTMLコーディング', completed: true },
+            { text: 'CSS設計', completed: false },
+            { text: 'JavaScript実装', completed: false },
+            { text: 'レスポンシブ対応', completed: false },
+            { text: 'ブラウザテスト', completed: false },
+            { text: 'サーバーサイドとの連携', completed: true },
+            { text: 'データベース設計', completed: true },
+            { text: 'API開発', completed: false },
+            { text: 'ユーザー認証機能', completed: false },
+            { text: '単体テスト作成', completed: false },
+            { text: '結合テスト', completed: false },
+            { text: 'UI/UX改善', completed: true },
+            { text: 'パフォーマンス最適化', completed: false },
+            { text: 'セキュリティ対策', completed: false },
+            { text: 'デプロイ作業', completed: false },
+            { text: 'ドキュメント作成', completed: true },
+            { text: 'コードレビュー', completed: false },
+            { text: 'バグ修正', completed: false },
+            { text: '新機能Aの企画', completed: false },
+        ];
+
+        localStorage.setItem('tasks', JSON.stringify(testTasks));
+        loadTasks();
+    };
+
     // Load tasks from local storage
     const loadTasks = () => {
         const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        if (tasks.length === 0) {
+            addInitialTasks();
+            return;
+        }
+        // Clear the list before loading
+        taskList.innerHTML = '';
         tasks.forEach(task => {
             createTaskElement(task.text, task.completed);
         });

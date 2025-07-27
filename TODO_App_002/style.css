@@ -16,16 +16,21 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
 }
 
 h1 {
     text-align: center;
     color: #4a4a4a;
+    flex-shrink: 0;
 }
 
 #add-form {
     display: flex;
     margin-bottom: 1em;
+    flex-shrink: 0;
 }
 
 #task-input {
@@ -54,6 +59,7 @@ h1 {
     list-style: none;
     padding: 0;
     margin: 0;
+    overflow-y: auto;
 }
 
 #task-list li {
